@@ -76,6 +76,9 @@ function update() {
 }
 
 function draw() {
+  // 🧼 CLEAR CANVAS FIRST (THIS FIXES DUPLICATION)
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
   // background
   ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
