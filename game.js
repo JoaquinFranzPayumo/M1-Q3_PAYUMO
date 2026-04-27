@@ -1,4 +1,7 @@
-// Load assets
+
+// =========================
+// 🎨 Load Assets
+// =========================
 const background = new Image();
 background.src = "assets/background.png";
 
@@ -8,7 +11,9 @@ catcher.src = "assets/catcher.png";
 const cat = new Image();
 cat.src = "assets/cat.png";
 
-// Canvas setup
+// =========================
+// 🖥️ Canvas Setup
+// =========================
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
 document.body.appendChild(canvas);
@@ -16,7 +21,9 @@ document.body.appendChild(canvas);
 canvas.width = 800;
 canvas.height = 500;
 
-// Player (catcher)
+// =========================
+// 🧑 Player (Catcher)
+// =========================
 let player = {
   x: 350,
   y: 400,
@@ -25,7 +32,9 @@ let player = {
   speed: 6
 };
 
-// Cat (object to catch)
+// =========================
+// 🐱 Cat (Target)
+// =========================
 let enemy = {
   x: Math.random() * 700,
   y: Math.random() * 300,
@@ -33,13 +42,17 @@ let enemy = {
   height: 60
 };
 
-// Movement
+// =========================
+// ⌨️ Controls
+// =========================
 let keys = {};
 
 window.addEventListener("keydown", (e) => keys[e.key] = true);
 window.addEventListener("keyup", (e) => keys[e.key] = false);
 
-// Collision check
+// =========================
+// ⚔️ Collision Detection
+// =========================
 function isColliding(a, b) {
   return (
     a.x < b.x + b.width &&
@@ -49,53 +62,75 @@ function isColliding(a, b) {
   );
 }
 
-// Win condition
+// =========================
+// 🏆 Game State
+// =========================
 let gameWon = false;
 
+// =========================
+// 🎮 Update Logic
+// =========================
 function update() {
   if (gameWon) return;
 
-  // Movement controls
+  // Movement
   if (keys["ArrowLeft"]) player.x -= player.speed;
   if (keys["ArrowRight"]) player.x += player.speed;
   if (keys["ArrowUp"]) player.y -= player.speed;
   if (keys["ArrowDown"]) player.y += player.speed;
 
-  // Collision detection
+  // Keep player inside screen
+  player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+  player.y = Math.max(0, Math.min(canvas.height - player.height, player.y));
+
+  // Collision check
   if (isColliding(player, enemy)) {
     gameWon = true;
 
-    console.log("You caught the cat! You win!");
+    console.log("🎉 You caught the cat! You win!");
 
-    document.getElementById("winMessage").style.display = "block";
+    // Show win message
+    const msg = document.getElementById("winMessage");
+    if (msg) {
+      msg.style.display = "block";
+      msg.style.color = "gold";
+    }
 
-    // remove cat visually
+    // Hide cat
     enemy.x = -1000;
     enemy.y = -1000;
   }
 }
 
+// =========================
+// 🎨 Draw Everything
+// =========================
 function draw() {
-  // 🧼 CLEAR CANVAS FIRST (THIS FIXES DUPLICATION)
+  // clear frame (IMPORTANT FIX)
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // background
   ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-  // player
+  // catcher
   ctx.drawImage(catcher, player.x, player.y, player.width, player.height);
 
   // cat
   ctx.drawImage(cat, enemy.x, enemy.y, enemy.width, enemy.height);
 }
 
+// =========================
+// 🔁 Game Loop
+// =========================
 function gameLoop() {
   update();
   draw();
   requestAnimationFrame(gameLoop);
 }
 
-// start game once images load
+// =========================
+// 🚀 Start Game
+// =========================
 window.onload = () => {
   gameLoop();
 };
